@@ -1,1 +1,2 @@
-web: gunicorn myProjectDjango.wsgi
+web: gunicorn myProjectDjango.wsgi:application --bind 0.0.0.0:$PORT
+
