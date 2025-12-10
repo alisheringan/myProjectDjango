@@ -1,0 +1,191 @@
+{% extends 'blog/base.html' %}
+{% load i18n %}
+
+{% block title %}{{ post.title }} - {% trans "Мой Блог" %}{% endblock %}
+{% block header %}{{ post.title }}{% endblock %}
+
+{% block content %}
+<div class="post-detail">
+    <!-- Пост -->
+    <article class="post-article">
+        {% if post.image %}
+        <div class="post-image">
+            <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-img">
+        </div>
+        {% endif %}
+
+        <div class="post-meta-info">
+            <span class="post-category">
+                <i class="fas fa-folder"></i> {% trans "Категория:" %} {{ post.category.name }}
+            </span>
+            <span class="post-author">
+                <i class="fas fa-user"></i> {% trans "Автор:" %} {{ post.author }}
+            </span>
+            <span class="post-date">
+                <i class="fas fa-calendar"></i> {{ post.created_date|date:"d.m.Y H:i" }}
+            </span>
+        </div>
+
+        <div class="post-content">
+            {{ post.content|linebreaks }}
+        </div>
+    </article>
+
+    <!-- Форма комментария -->
+    <section class="comment-section">
+        <div class="comment-form-container">
+            <h2 class="section-title">
+                <i class="fas fa-comment"></i> {% trans "Оставить комментарий" %}
+            </h2>
+
+            <form method="post" class="comment-form">
+                {% csrf_token %}
+
+                {% if form.errors %}
+                <div class="form-errors">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    {% trans "Пожалуйста, исправьте ошибки ниже." %}
+                </div>
+                {% endif %}
+
+                <div class="form-group">
+                    <label class="form-label">{{ form.author_name.label }}</label>
+                    {{ form.author_name }}
+                    {% if form.author_name.errors %}
+                    <div class="field-errors">{{ form.author_name.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">{{ form.subject.label }}</label>
+                    {{ form.subject }}
+                    {% if form.subject.errors %}
+                    <div class="field-errors">{{ form.subject.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">{{ form.text.label }}</label>
+                    {{ form.text }}
+                    {% if form.text.errors %}
+                    <div class="field-errors">{{ form.text.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="submit-button">
+                    <i class="fas fa-paper-plane"></i> {% trans "Отправить комментарий" %}
+                </button>
+            </form>
+        </div>
+
+        <!-- Список комментариев -->
+        <div class="comments-list-container">
+            <h2 class="section-title">
+                <i class="fas fa-comments"></i>
+                {% trans "Комментарии" %}
+                <span class="comments-count">({{ comments.count }})</span>
+            </h2>
+
+            {% if comments %}
+                {% for comment in comments %}
+                <div class="comment-card {% if not comment.is_approved %}comment-pending{% endif %}">
+                    <div class="comment-header">
+                        <div class="comment-author">
+                            <i class="fas fa-user-circle"></i>
+                            <strong>{{ comment.author_name }}</strong>
+                        </div>
+                        <div class="comment-date">
+                            <i class="fas fa-clock"></i> {{ comment.created_date|date:"d.m.Y H:i" }}
+                        </div>
+                    </div>
+
+                    <h4 class="comment-subject">{{ comment.subject }}</h4>
+
+                    <div class="comment-text">
+                        {{ comment.text|linebreaks }}
+                    </div>
+
+                    {% if user.is_authenticated and user.is_staff %}
+                    <div class="comment-actions">
+                        <form method="post" action="{% url 'hide_comment' comment.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="action-button hide-button">
+                                <i class="fas fa-eye-slash"></i> {% trans "Снять с публикации" %}
+                            </button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-comments">
+                    <div class="no-comments-icon">
+                        <i class="fas fa-comment-slash"></i>
+                    </div>
+                    <h3>{% trans "Пока нет комментариев" %}</h3>
+                    <p>{% trans "Будьте первым, кто оставит комментарий к этому посту!" %}</p>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+</div>
+
+<style>
+    /* Основные стили */
+    .post-detail { max-width: 900px; margin: 0 auto; padding: 20px; }
+
+    .post-article { background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
+    .post-image { text-align: center; margin-bottom: 25px; }
+    .post-img { max-width: 100%; border-radius: 10px; box-shadow: 0 3px 15px rgba(0,0,0,0.1); }
+
+    .post-meta-info { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #f0f0f0; }
+    .post-category, .post-author, .post-date { display: flex; align-items: center; gap: 8px; color: #666; font-size: 0.95rem; }
+    .post-category i, .post-author i, .post-date i { color: #667eea; }
+    .post-content { font-size: 1.1rem; line-height: 1.7; color: #333; }
+
+    .comment-section { margin-top: 40px; }
+    .section-title { color: #333; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 3px solid #667eea; display: flex; align-items: center; gap: 10px; }
+    .comments-count { background: #667eea; color: white; padding: 2px 10px; border-radius: 20px; font-size: 0.9rem; }
+
+    .comment-form-container { background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
+    .form-errors { background: #ffe6e6; color: #d32f2f; padding: 12px 15px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
+    .comment-form input, .comment-form textarea { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s; }
+    .comment-form input:focus, .comment-form textarea:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+    .comment-form textarea { min-height: 150px; resize: vertical; }
+    .field-errors { color: #d32f2f; font-size: 0.9rem; margin-top: 5px; }
+    .submit-button { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 30px; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; gap: 10px; }
+    .submit-button:hover { transform: translateY(-2px); box-shadow: 0 7px 14px rgba(102, 126, 234, 0.2); }
+
+    .comments-list-container { background: white; border-radius: 12px; padding: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
+    .comment-card { background: #f8f9fa; border-radius: 10px; padding: 20px; margin-bottom: 20px; border-left: 4px solid #667eea; transition: transform 0.2s; }
+    .comment-card:hover { transform: translateX(5px); }
+    .comment-pending { border-left-color: #ffc107; background: #fff8e6; }
+
+    .comment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .comment-author, .comment-date { display: flex; align-items: center; gap: 8px; }
+    .comment-author i { color: #667eea; font-size: 1.2rem; }
+    .comment-date { color: #666; font-size: 0.9rem; }
+    .comment-date i { color: #999; }
+    .comment-subject { color: #333; margin: 10px 0; font-size: 1.1rem; }
+    .comment-text { color: #555; line-height: 1.6; margin: 15px 0; }
+
+    .comment-actions { margin-top: 15px; text-align: right; }
+    .action-button { padding: 6px 15px; border: none; border-radius: 5px; font-size: 0.9rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+    .hide-button { background: #ff6b6b; color: white; }
+    .hide-button:hover { background: #ff5252; }
+
+    .no-comments { text-align: center; padding: 50px 20px; }
+    .no-comments-icon { font-size: 4rem; color: #ddd; margin-bottom: 20px; }
+    .no-comments h3 { color: #666; margin-bottom: 10px; }
+    .no-comments p { color: #888; font-size: 1.1rem; }
+
+    @media (max-width: 768px) {
+        .post-detail { padding: 15px; }
+        .post-article, .comment-form-container, .comments-list-container { padding: 20px; }
+        .post-meta-info { flex-direction: column; gap: 10px; }
+        .comment-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+    }
+</style>
+{% endblock %}

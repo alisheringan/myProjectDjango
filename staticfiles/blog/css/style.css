@@ -1,0 +1,185 @@
+/* Общие стили */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Шапка */
+.header {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header h1 {
+    text-align: center;
+    color: #333;
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Навигация */
+.nav {
+    text-align: center;
+    background: #444;
+    padding: 1rem;
+}
+
+.nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 1.5rem;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.nav a:hover {
+    color: #667eea;
+}
+
+/* Основной контент */
+.content {
+    padding: 2rem 0;
+}
+
+/* Посты */
+.post {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: 1px solid #e0e0e0;
+    margin: 1rem 0;
+}
+
+.post:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+}
+
+.post h4 {
+    color: #333;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 0.5rem;
+}
+
+.post img {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    border-radius: 10px;
+    margin: 1rem 0;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Подвал */
+.footer {
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    text-align: center;
+    padding: 2rem 0;
+    margin-top: 3rem;
+}
+
+2)
+/Users/alishermomunaliev/PycharmProjects/myProjectDjango/blog/templates/blog/email/new_comment.html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Новый комментарий на вашем блоге</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: #667eea;
+            color: white;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+            text-align: center;
+        }
+        .content {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 0 0 10px 10px;
+        }
+        .comment-box {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #667eea;
+        }
+        .button {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Новый комментарий на вашем блоге!</h1>
+    </div>
+
+    <div class="content">
+        <h2>Детали комментария:</h2>
+
+        <p><strong>Пост:</strong> {{ post_title }}</p>
+        <p><strong>Автор комментария:</strong> {{ comment_author }}</p>
+        <p><strong>Тема:</strong> {{ comment_subject }}</p>
+        <p><strong>Дата:</strong> {{ comment_date }}</p>
+
+        <div class="comment-box">
+            <h3>Текст комментария:</h3>
+            <p>{{ comment_text }}</p>
+        </div>
+
+        <p>Вы можете просмотреть комментарий по ссылке:</p>
+        <a href="{{ post_url }}" class="button">Перейти к посту</a>
+    </div>
+
+    <div class="footer">
+        <p>Это автоматическое уведомление с блога Monunaliev Alisher.</p>
+        <p>Если вы не хотите получать эти уведомления, пожалуйста, свяжитесь с администратором.</p>
+    </div>
+</body>
+</html>

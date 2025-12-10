@@ -1,0 +1,58 @@
+{% extends 'blog/base.html' %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Обо мне - Мой Блог" %}{% endblock %}
+
+{% block header %}{% trans "Обо мне" %}{% endblock %}
+
+{% block content %}
+<div class="about-card" style="background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+    <div class="row">
+        <div class="col-md-4">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="width: 200px; height: 200px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 4rem; color: white;">
+                    👨‍💻
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <h2 style="color: #2c3e50; margin-bottom: 1rem;">{% trans "Monunaliev Alisher" %}</h2>
+            <h4 style="color: #3498db; margin-bottom: 1.5rem;">{% trans "Студент, разработчик" %}</h4>
+
+            <div style="line-height: 1.6; color: #555; margin-bottom: 2rem;">
+                <p>{% trans "Привет! Я студент, изучающий веб-разработку и программирование. Этот блог создан в рамках учебного проекта по Django." %}</p>
+                <p>{% trans "Здесь я делюсь своими знаниями, проектами и опытом в разработке на Python, Django, JavaScript и других технологиях." %}</p>
+                <p>{% trans "Мой путь в IT начался с интереса к созданию веб-сайтов, и с тех пор я постоянно учусь и развиваюсь в этой области." %}</p>
+            </div>
+
+            <h4 style="color: #2c3e50; margin-bottom: 1rem;">{% trans "Навыки" %}</h4>
+            <div style="margin-bottom: 2rem;">
+                <span class="skill-badge">Python</span>
+                <span class="skill-badge">Django</span>
+                <span class="skill-badge">HTML/CSS</span>
+                <span class="skill-badge">JavaScript</span>
+                <span class="skill-badge">Git</span>
+                <span class="skill-badge">SQL</span>
+            </div>
+
+            <div class="contact-info">
+                <h4 style="color: #2c3e50; margin-bottom: 1rem;">{% trans "Контакты" %}</h4>
+                <p>📧 Email: <a href="mailto:momunaliev.alisher@gmail.com">momunaliev.alisher@gmail.com</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .skill-badge {
+        display: inline-block;
+        background: #e3f2fd;
+        color: #1976d2;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        margin: 0.25rem;
+        font-weight: 500;
+    }
+</style>
+{% endblock %}

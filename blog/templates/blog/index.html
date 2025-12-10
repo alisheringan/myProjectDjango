@@ -1,0 +1,499 @@
+{% extends 'blog/base.html' %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Главная страница - Мой Блог" %}{% endblock %}
+
+{% block header %}{% trans "Добро пожаловать в мой блог!" %}{% endblock %}
+
+{% block content %}
+    <!-- ПАНЕЛЬ ФИЛЬТРОВ -->
+    <div class="filters-card">
+        <h2 class="section-title">🔍 {% trans "Поиск и фильтрация" %}</h2>
+
+        <form method="get" action="{% url 'index' %}" class="filter-form">
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label>{% trans "Поиск постов" %}</label>
+                    <input type="text" name="search" value="{{ search_query }}"
+                           placeholder="{% trans 'Введите ключевые слова...' %}"
+                           class="filter-input">
+                </div>
+
+                <div class="filter-group">
+                    <label>{% trans "Категория" %}</label>
+                    <select name="category" class="filter-select">
+                        <option value="">{% trans "Все категории" %}</option>
+                        {% for category in categories %}
+                        <option value="{{ category.id }}" {% if selected_category == category.id|stringformat:"i" %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>{% trans "Период" %}</label>
+                    <select name="date_filter" class="filter-select">
+                        <option value="">{% trans "Все время" %}</option>
+                        <option value="week" {% if selected_date_filter == 'week' %}selected{% endif %}>{% trans "За неделю" %}</option>
+                        <option value="month" {% if selected_date_filter == 'month' %}selected{% endif %}>{% trans "За месяц" %}</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>&nbsp;</label>
+                    <div class="filter-buttons">
+                        <button type="submit" class="btn btn-primary">{% trans "Применить" %}</button>
+                        <a href="{% url 'index' %}" class="btn btn-secondary">{% trans "Сбросить" %}</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        {% if search_query or selected_category or selected_date_filter %}
+        <div class="filter-results">
+            <strong>{% trans "Результаты:" %}</strong> {% trans "Найдено постов:" %} {{ posts.count }}
+            {% if search_query %} • {% trans "Поиск:" %} "{{ search_query }}"{% endif %}
+            {% if selected_category %} • {% trans "Категория:" %}
+                {% for category in categories %}
+                    {% if category.id == selected_category|add:0 %}
+                        {{ category.name }}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            {% if selected_date_filter == 'week' %} • {% trans "За последнюю неделю" %}{% endif %}
+            {% if selected_date_filter == 'month' %} • {% trans "За последний месяц" %}{% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ПРИВЕТСТВИЕ -->
+    <div class="welcome-card">
+        <h2>👨‍💻 {% trans "Monunaliev Alisher" %}</h2>
+        <p>{% trans "Добро пожаловать на мой учебный блог, посвященный разработке на Django, Python и веб-технологиям. Здесь я делюсь своими проектами и знаниями." %}</p>
+    </div>
+
+    <!-- ГРИД ПОСТОВ -->
+    <div class="posts-container">
+        <h2 class="section-title">
+            {% if search_query or selected_category or selected_date_filter %}
+                📋 {% trans "Результаты поиска" %}
+            {% else %}
+                📝 {% trans "Последние посты" %}
+            {% endif %}
+        </h2>
+
+        {% if posts %}
+            <div class="posts-grid">
+                {% for post in posts %}
+                <article class="post-card">
+                    <!-- ИЗОБРАЖЕНИЕ -->
+                    {% if post.image %}
+                    <div class="post-image-wrapper">
+                        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-image" loading="lazy">
+                        <div class="image-overlay"></div>
+                    </div>
+                    {% else %}
+                    <div class="post-image-wrapper no-image">
+                        <div class="placeholder-image">
+                            <span>📄</span>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- КОНТЕНТ КАРТОЧКИ -->
+                    <div class="post-body">
+                        <div class="post-header">
+                            <span class="post-category">{{ post.category.name|default:"Общее" }}</span>
+                            <span class="post-date">{{ post.created_date|date:"d.m.Y" }}</span>
+                        </div>
+
+                        <h3 class="post-title">
+                            <a href="{% url 'post_detail' post.id %}">{{ post.title }}</a>
+                        </h3>
+
+                        <p class="post-excerpt">
+                            {{ post.content|truncatechars:150 }}
+                        </p>
+
+                        <div class="post-footer">
+                            <div class="post-author">
+                                <span class="author-icon">👤</span>
+                                {{ post.author.username }}
+                            </div>
+                            <div class="post-status">
+                                {% if post.is_published %}
+                                <span class="status-badge published">{% trans "Опубликован" %}</span>
+                                {% else %}
+                                <span class="status-badge draft">{% trans "Черновик" %}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="post-actions">
+                            <a href="{% url 'post_detail' post.id %}" class="btn btn-primary btn-sm">{% trans "Читать" %} →</a>
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-results">
+                <div class="empty-icon">📭</div>
+                <h3>{% trans "Посты не найдены" %}</h3>
+                <p>{% trans "Попробуйте изменить параметры поиска" %}</p>
+                <a href="{% url 'index' %}" class="btn btn-primary">{% trans "Показать все посты" %}</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <style>
+        /* СТИЛИ ГЛАВНОЙ СТРАНИЦЫ */
+
+        /* Фильтры */
+        .filters-card {
+            background: white;
+            padding: 1.8rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+            border: 1px solid #e9ecef;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.7rem;
+            border-bottom: 2px solid #3498db;
+            font-weight: 600;
+            font-size: 1.3rem;
+        }
+
+        .filter-form {
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.2rem;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.9rem;
+        }
+
+        .filter-input, .filter-select {
+            padding: 0.7rem 1rem;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            background: white;
+            width: 100%;
+        }
+
+        .filter-input:focus, .filter-select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 0.7rem;
+        }
+
+        .filter-results {
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+            font-size: 0.9rem;
+            color: #495057;
+            margin-top: 1rem;
+        }
+
+        /* Приветствие */
+        .welcome-card {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+        }
+
+        .welcome-card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .welcome-card p {
+            font-size: 1rem;
+            opacity: 0.95;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Посты */
+        .posts-container {
+            margin-top: 1rem;
+        }
+
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.8rem;
+            margin-top: 1.5rem;
+        }
+
+        .post-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            border: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .post-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        /* Изображения - ФИКСИРОВАННЫЙ РАЗМЕР */
+        .post-image-wrapper {
+            width: 100%;
+            height: 200px; /* Фиксированная высота */
+            overflow: hidden;
+            position: relative;
+            background: #f8f9fa;
+        }
+
+        .post-image-wrapper.no-image {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .post-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Важно: обрезаем и сохраняем пропорции */
+            transition: transform 0.5s;
+        }
+
+        .post-card:hover .post-image {
+            transform: scale(1.05);
+        }
+
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.1) 100%);
+            pointer-events: none;
+        }
+
+        .placeholder-image {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            opacity: 0.7;
+        }
+
+        /* Тело карточки */
+        .post-body {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .post-category {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .post-date {
+            color: #6c757d;
+            font-size: 0.85rem;
+        }
+
+        .post-title {
+            margin: 0 0 1rem 0;
+            font-size: 1.2rem;
+            line-height: 1.4;
+            color: #2c3e50;
+        }
+
+        .post-title a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .post-title a:hover {
+            color: #3498db;
+        }
+
+        .post-excerpt {
+            color: #555;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+            font-size: 0.95rem;
+        }
+
+        .post-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+            font-size: 0.85rem;
+        }
+
+        .post-author {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #6c757d;
+        }
+
+        .author-icon {
+            font-size: 0.9rem;
+        }
+
+        .status-badge {
+            padding: 0.3rem 0.7rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .status-badge.published {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.draft {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .post-actions {
+            margin-top: auto;
+        }
+
+        .btn-sm {
+            padding: 0.4rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        /* Пустое состояние */
+        .no-results {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .no-results h3 {
+            color: #2c3e50;
+            margin-bottom: 0.8rem;
+            font-size: 1.3rem;
+        }
+
+        .no-results p {
+            color: #6c757d;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .posts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome-card {
+                padding: 1.5rem;
+            }
+
+            .welcome-card h2 {
+                font-size: 1.5rem;
+            }
+
+            .post-image-wrapper {
+                height: 180px;
+            }
+
+            .filter-buttons {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .post-footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.8rem;
+            }
+
+            .filters-card,
+            .post-body {
+                padding: 1.2rem;
+            }
+
+            .post-image-wrapper {
+                height: 160px;
+            }
+        }
+    </style>
+{% endblock %}

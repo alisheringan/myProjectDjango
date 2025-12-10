@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    {% load i18n %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% trans "Мой Блог" %}{% endblock %}</title>
+    <style>
+        /* БАЗОВЫЕ СТИЛИ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ШАПКА */
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        .logo:hover {
+            opacity: 0.9;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            opacity: 0.95;
+            margin: 0;
+        }
+
+        /* НАВИГАЦИЯ */
+        .navbar {
+            background: white;
+            padding: 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+
+        .main-nav {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .nav-link:hover {
+            background: #3498db;
+            color: white;
+        }
+
+        /* КНОПКИ - ЕДИНЫЙ СТИЛЬ КАК В ШАБЛОНЕ */
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1.2rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            text-align: center;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #219653;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+        }
+
+        .btn-secondary {
+            background: #7f8c8d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #636e72;
+            transform: translateY(-2px);
+        }
+
+        .user-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .username {
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* ОСНОВНОЙ КОНТЕНТ */
+        .main-content {
+            flex: 1;
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        .content-wrapper {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+            border: 1px solid #e9ecef;
+        }
+
+        /* СООБЩЕНИЯ */
+        .messages {
+            max-width: 1200px;
+            margin: 1rem auto;
+            padding: 0 20px;
+        }
+
+        .alert {
+            padding: 1rem 1.2rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            border-left: 4px solid;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left-color: #28a745;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left-color: #dc3545;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left-color: #17a2b8;
+        }
+
+        /* ПОДВАЛ */
+        .footer {
+            background: #2c3e50;
+            color: #ecf0f1;
+            text-align: center;
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+            border-top: 1px solid #34495e;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-links {
+            margin: 1rem 0;
+        }
+
+        .footer-links a {
+            color: #3498db;
+            text-decoration: none;
+            margin: 0 0.8rem;
+            font-weight: 500;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        .footer p {
+            margin: 0.5rem 0;
+            color: #bdc3c7;
+            font-size: 0.85rem;
+        }
+
+        /* Стили для переключателя языка */
+        .language-form {
+            display: inline-block;
+            margin: 0;
+        }
+
+        .language-select {
+            padding: 0.4rem 0.8rem;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            background: white;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .language-select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .language-select:hover {
+            border-color: #3498db;
+        }
+
+        /* АДАПТИВНОСТЬ */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                height: auto;
+                padding: 1rem 20px;
+                gap: 1rem;
+            }
+
+            .main-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+
+            .user-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .header-content {
+                padding: 0 15px;
+            }
+
+            .logo {
+                font-size: 1.6rem;
+            }
+
+            .header h1 {
+                font-size: 1.2rem;
+            }
+
+            .content-wrapper {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.85rem;
+            }
+
+            .nav-link {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ШАПКА -->
+    <header class="header">
+        <div class="header-content">
+            <a href="{% url 'index' %}" class="logo">📝 {% trans "МОЙ БЛОГ" %}</a>
+            <h1>{% block header %}{% trans "Площадка для обмена знаниями" %}{% endblock %}</h1>
+        </div>
+    </header>
+
+    <!-- НАВИГАЦИЯ -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="main-nav">
+                <a href="{% url 'index' %}" class="nav-link">🏠 {% trans "Главная" %}</a>
+                <a href="{% url 'about' %}" class="nav-link">👤 {% trans "Обо мне" %}</a>
+                <a href="{% url 'contact' %}" class="nav-link">📞 {% trans "Контакты" %}</a>
+
+                <!-- ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКОВ -->
+                <form action="{% url 'set_language' %}" method="post" class="language-form">
+                    {% csrf_token %}
+                    <input name="next" type="hidden" value="{{ request.path }}">
+                    <select name="language" onchange="this.form.submit()" class="language-select">
+                        {% get_current_language as LANGUAGE_CODE %}
+                        {% get_available_languages as LANGUAGES %}
+                        <option value="ru" {% if LANGUAGE_CODE == 'ru' %}selected{% endif %}>🇷🇺 {% trans "Русский" %}</option>
+                        <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>🇺🇸 {% trans "English" %}</option>
+                    </select>
+                </form>
+
+                {% if user.is_staff %}
+                <a href="/admin/" class="nav-link">⚙️ {% trans "Админка" %}</a>
+                {% endif %}
+            </div>
+
+            <div class="user-nav">
+                {% if user.is_authenticated %}
+                    <span class="username">👋 {% trans "Привет," %} {{ user.username }}</span>
+                    <a href="{% url 'profile' %}" class="btn btn-primary">{% trans "Профиль" %}</a>
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">🚪 {% trans "Выйти" %}</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-primary">🔑 {% trans "Войти" %}</a>
+                    <a href="{% url 'register' %}" class="btn btn-success">📝 {% trans "Регистрация" %}</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- СООБЩЕНИЯ DJANGO -->
+    <div class="messages">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
+    <main class="main-content">
+        <div class="content-wrapper">
+            {% block content %}
+            <!-- Сюда вставляется контент из других шаблонов -->
+            {% endblock %}
+        </div>
+    </main>
+
+    <!-- ПОДВАЛ -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; {% now "Y" %} {% trans "Мой Блог. Все права защищены." %}</p>
+            <div class="footer-links">
+                {% if user.is_authenticated %}
+                    {% trans "Вы вошли как" %} <strong>{{ user.username }}</strong> |
+                    <a href="{% url 'logout' %}">{% trans "Выйти" %}</a>
+                {% else %}
+                    <a href="{% url 'login' %}">{% trans "Войти" %}</a> |
+                    <a href="{% url 'register' %}">{% trans "Регистрация" %}</a>
+                {% endif %}
+            </div>
+            <p>{% trans "Создано Monunaliev Alisher • Учебный проект на Django" %}</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,118 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}Профиль - {{ user.username }}{% endblock %}
+
+{% block header %}Профиль пользователя{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div style="background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+        <h2 style="color: #333; border-bottom: 2px solid #667eea; padding-bottom: 0.5rem;">
+            Информация о пользователе
+        </h2>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0;">
+            <div style="background: #f8f9fa; padding: 1rem; border-radius: 5px;">
+                <p><strong>Имя пользователя:</strong></p>
+                <p style="font-size: 1.2rem; color: #667eea;">{{ user.username }}</p>
+            </div>
+
+            <div style="background: #f8f9fa; padding: 1rem; border-radius: 5px;">
+                <p><strong>Email:</strong></p>
+                <p>{{ user.email|default:"Не указан" }}</p>
+            </div>
+
+            <div style="background: #f8f9fa; padding: 1rem; border-radius: 5px;">
+                <p><strong>Дата регистрации:</strong></p>
+                <p>{{ user.date_joined|date:"d.m.Y H:i" }}</p>
+            </div>
+
+            <div style="background: #f8f9fa; padding: 1rem; border-radius: 5px;">
+                <p><strong>Последний вход:</strong></p>
+                <p>{{ user.last_login|date:"d.m.Y H:i"|default:"Никогда" }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ПОСТЫ ПОЛЬЗОВАТЕЛЯ -->
+    <div style="background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+        <h3 style="color: #333; margin-bottom: 1rem;">Мои посты ({{ user_posts.count }})</h3>
+
+        {% if user_posts %}
+            <div style="display: grid; gap: 1rem;">
+                {% for post in user_posts %}
+                <div style="border: 1px solid #eee; padding: 1rem; border-radius: 5px;">
+                    <h4 style="margin: 0 0 0.5rem 0;">
+                        <a href="{% url 'post_detail' post.id %}" style="color: #667eea; text-decoration: none;">
+                            {{ post.title }}
+                        </a>
+                    </h4>
+                    <p style="color: #666; margin: 0 0 0.5rem 0;">
+                        {{ post.created_date|date:"d.m.Y" }} |
+                        {% if post.is_published %}
+                            <span style="color: green;">● Опубликовано</span>
+                        {% else %}
+                            <span style="color: orange;">● Черновик</span>
+                        {% endif %}
+                    </p>
+                    <p style="color: #333; margin: 0;">
+                        {{ post.content|truncatechars:100 }}
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p style="color: #666; text-align: center; padding: 2rem;">
+                У вас пока нет постов. <a href="/admin/blog/post/add/" style="color: #667eea;">Создать пост</a>
+            </p>
+        {% endif %}
+    </div>
+
+    <!-- КОММЕНТАРИИ ПОЛЬЗОВАТЕЛЯ -->
+    <div style="background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <h3 style="color: #333; margin-bottom: 1rem;">Мои комментарии ({{ user_comments.count }})</h3>
+
+        {% if user_comments %}
+            <div style="display: grid; gap: 1rem;">
+                {% for comment in user_comments %}
+                <div style="border: 1px solid #eee; padding: 1rem; border-radius: 5px;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                        <div>
+                            <strong style="color: #333;">{{ comment.subject }}</strong>
+                            <span style="color: #666; font-size: 0.9rem;">
+                                к посту: <a href="{% url 'post_detail' comment.post.id %}" style="color: #667eea;">
+                                    {{ comment.post.title }}
+                                </a>
+                            </span>
+                        </div>
+                        <div style="color: #666; font-size: 0.9rem;">
+                            {{ comment.created_date|date:"d.m.Y H:i" }}
+                        </div>
+                    </div>
+                    <p style="color: #333; margin: 0 0 0.5rem 0;">
+                        {{ comment.text|truncatechars:150 }}
+                    </p>
+                    <div style="color: #666; font-size: 0.9rem;">
+                        {% if comment.is_approved %}
+                            <span style="color: green;">● Одобрен</span>
+                        {% else %}
+                            <span style="color: red;">● На модерации</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p style="color: #666; text-align: center; padding: 2rem;">
+                У вас пока нет комментариев.
+            </p>
+        {% endif %}
+    </div>
+
+    <div style="text-align: center; margin-top: 2rem;">
+        <a href="{% url 'index' %}" class="btn" style="background: #667eea; color: white; padding: 0.75rem 1.5rem; text-decoration: none; border-radius: 5px;">
+            Вернуться на главную
+        </a>
+    </div>
+</div>
+{% endblock %}

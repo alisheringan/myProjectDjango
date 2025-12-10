@@ -1,0 +1,149 @@
+{% extends 'blog/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Контакты - Мой Блог" %}{% endblock %}
+{% block header %}{% trans "Контакты" %}{% endblock %}
+
+{% block content %}
+<div class="contact-container">
+    <div class="row">
+        <!-- Левая колонка: контактная информация -->
+        <div class="col-md-6">
+            <div class="contact-card">
+                <h3>📞 {% trans "Свяжитесь со мной" %}</h3>
+
+                <div class="contact-info">
+                    <div>
+                        <h5>📧 {% trans "Email" %}</h5>
+                        <p><a href="mailto:momunaliev.alisher@gmail.com">momunaliev.alisher@gmail.com</a></p>
+                    </div>
+
+                    <div>
+                        <h5>📍 {% trans "Местоположение" %}</h5>
+                        <p>{% trans "Кыргызстан, Бишкек" %}</p>
+                    </div>
+
+                    <div>
+                        <h5>⏰ {% trans "Время для связи" %}</h5>
+                        <p>{% trans "Пн-Пт: 9:00 - 18:00" %}</p>
+                    </div>
+                </div>
+
+                <div class="social-links">
+                    <h5>🌐 {% trans "Социальные сети" %}</h5>
+                    <div style="display: flex; gap: 1rem;">
+                        <a href="#" title="GitHub">🐙</a>
+                        <a href="#" title="LinkedIn">💼</a>
+                        <a href="#" title="Telegram">✈️</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Правая колонка: форма обратной связи -->
+        <div class="col-md-6">
+            <div class="message-card">
+                <h3>💬 {% trans "Написать сообщение" %}</h3>
+
+                <!-- Вывод уведомлений -->
+                {% if messages %}
+                    <div>
+                        {% for message in messages %}
+                            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div>
+                        <label>{% trans "Ваше имя" %}</label>
+                        <input type="text" name="name" class="form-control" required>
+                    </div>
+
+                    <div>
+                        <label>{% trans "Email" %}</label>
+                        <input type="email" name="email" class="form-control" required>
+                    </div>
+
+                    <div>
+                        <label>{% trans "Сообщение" %}</label>
+                        <textarea name="message" rows="5" class="form-control" required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">{% trans "Отправить сообщение" %}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.contact-container {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.contact-card, .message-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    height: 100%;
+}
+
+.contact-info h5, .social-links h5 {
+    color: #3498db;
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.alert {
+    padding: 0.75rem 1rem;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+@media (max-width: 768px) {
+    .contact-container {
+        padding: 1rem;
+    }
+
+    .row {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+</style>
+{% endblock %}
